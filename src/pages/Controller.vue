@@ -1,10 +1,13 @@
 <template>
-  <div class="q-pad-md row justify-center">
-    <q-card v-touch-pan.prevent.mouse="handlePan" class="flex-center custom-area">
+  <!-- <div class="q-pad-md row justify-center"> -->
+  <q-page class="flex flex-center">
+    <q-card class="custom-area column">
       <!-- class="custom-area cursor-pointer bg-primary text-white shadow-2 relative-position row flex-center" -->
       <q-card-section
+        v-touch-pan.prevent.mouse="handlePan"
         class="full-width bg-primary text-white row flex-center cursor-pointer touch-area"
       >
+        <!-- <Joy class="custom-area" /> -->
         <div v-if="state.info" class="custom-info">
           <pre>{{ state.info }}</pre>
         </div>
@@ -23,19 +26,27 @@
         </div>
       </q-card-section>
       <q-separator />
-
-      <q-card-actions align="right">
-        <q-input rounded standout dense v-model="state.cmdVelTopic" label="cmd_vel topic"></q-input>
+      <q-card-section class="justify-center row">
+        <q-input
+          :width="200"
+          rounded
+          standout
+          dense
+          v-model="state.cmdVelTopic"
+          label="cmd_vel topic"
+          class="col-auto"
+        ></q-input>
         <!-- <q-btn flat>Action 1</q-btn> -->
-      </q-card-actions>
+      </q-card-section>
     </q-card>
-  </div>
+    <!-- </div> -->
+  </q-page>
 </template>
 
 <script setup>
+// import Joy from 'components/Joy.vue'
 import { rosInterface } from 'src/utils/RosUtils'
 import { toRefs, ref, reactive, watch, computed, onMounted } from 'vue'
-
 const state = reactive({
   info: null,
   panning: false,
