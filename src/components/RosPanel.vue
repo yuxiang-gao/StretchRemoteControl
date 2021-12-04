@@ -1,14 +1,26 @@
 <template >
-    <q-input rounded outlined v-model="ws_address" label="ROS Connection">
+    <q-input dark standout dense v-model="ws_address" label="ROS Connection">
         <template v-slot:append>
             <q-btn
                 v-if="rosConnection.connected"
                 @click="rosDisconnect"
                 round
-                color="primary"
+                dense
+                flat
+                color="positive"
                 icon="link"
+                class="cursor-pointer"
             />
-            <q-btn v-else @click="connect" round color="red" icon="link_off" />
+            <q-btn
+                v-else
+                @click="connect"
+                round
+                dense
+                flat
+                color="red"
+                icon="link_off"
+                class="cursor-pointer"
+            />
             <!-- <q-avatar>
                     <img src="https://cdn.quasar.dev/logo-v2/svg/logo.svg" />
             </q-avatar>-->

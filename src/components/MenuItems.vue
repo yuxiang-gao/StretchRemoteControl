@@ -1,6 +1,6 @@
 <template>
-  <q-item-label header>Menu</q-item-label>
-  <q-toggle v-model="active" label="Active" />
+  <!-- <q-item-label header>Menu</q-item-label> -->
+  <!-- <q-toggle v-model="active" label="Active" /> -->
 
   <template v-for="(menuItem, index) in menuList" :key="index">
     <q-item clickable v-ripple :to="{ name: menuItem.pathName }">
@@ -33,5 +33,4 @@ const menuList = [
     separator: false
   },
 ]
-const active = ref(true)
 </script>
