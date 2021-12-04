@@ -60,10 +60,18 @@ function clearOrders() {
       state.orders[items] = 0
     }
     console.log('Orders cleared.')
+    $q.notify({
+      type: 'positive',
+      message: 'Orders cleared.'
+    })
   }).onOk(() => {
     // console.log('>>>> second OK catcher')
   }).onCancel(() => {
     // console.log('>>>> Cancel')
+    $q.notify({
+      type: 'warning',
+      message: 'Canceled.'
+    })
   }).onDismiss(() => {
     // console.log('I am triggered on both OK and Cancel')
   })
@@ -78,15 +86,30 @@ function checkoutOrders() {
     persistent: true
   }).onOk(() => {
     // console.log('>>>> OK')
-    console.log('Orders submitted.')
+    const notif = $q.notify({
+      type: 'ongoing',
+      message: 'Submitting...'
+    })
+    // console.log('Orders submitted.')
+    //TODO publish order
+    notif({
+      type: 'positive',
+      message: 'Orders submitted.'
+    })
   }).onOk(() => {
     // console.log('>>>> second OK catcher')
   }).onCancel(() => {
     // console.log('>>>> Cancel')
+    $q.notify({
+      type: 'warning',
+      message: 'Canceled.'
+    })
   }).onDismiss(() => {
     // console.log('I am triggered on both OK and Cancel')
   })
 }
+
+
 onMounted(() => {
   stock.forEach((item, index) => {
     state.orders[item.id] = 0
