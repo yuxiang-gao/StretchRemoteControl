@@ -23,7 +23,7 @@
       </template>
     </div>
     <q-page-sticky position="bottom-right" :offset="[18, 18]">
-      <q-fab icon="add" direction="up" color="accent">
+      <q-fab icon="shopping_cart" direction="up" color="accent">
         <q-fab-action @click="checkoutOrders" color="primary" icon="shopping_cart_checkout" />
         <q-fab-action @click="clearOrders" color="primary" icon="remove_shopping_cart" />
       </q-fab>
@@ -35,6 +35,8 @@
 
 import { ref, toRefs, reactive, onMounted, watch } from "vue"
 import { rosInterface } from "src/utils/RosUtils"
+import { useQuasar } from 'quasar'
+const $q = useQuasar()
 
 const stock = [
   { id: 80, }, { id: 81 }, { id: 82 }
@@ -45,15 +47,45 @@ const state = reactive({
 })
 
 
-function checkoutOrders() {
-  console.log(state.orders)
+
+function clearOrders() {
+  $q.dialog({
+    title: 'Confirm',
+    message: 'Clear orders?',
+    cancel: true,
+    persistent: true
+  }).onOk(() => {
+    // console.log('>>>> OK')
+    for (var items in state.orders) {
+      state.orders[items] = 0
+    }
+    console.log('Orders cleared.')
+  }).onOk(() => {
+    // console.log('>>>> second OK catcher')
+  }).onCancel(() => {
+    // console.log('>>>> Cancel')
+  }).onDismiss(() => {
+    // console.log('I am triggered on both OK and Cancel')
+  })
 
 }
 
-function clearOrders() {
-  for (var items in state.orders) {
-    state.orders[items] = 0
-  }
+function checkoutOrders() {
+  $q.dialog({
+    title: 'Confirm',
+    message: 'Submit orders?',
+    cancel: true,
+    persistent: true
+  }).onOk(() => {
+    // console.log('>>>> OK')
+    console.log('Orders submitted.')
+  }).onOk(() => {
+    // console.log('>>>> second OK catcher')
+  }).onCancel(() => {
+    // console.log('>>>> Cancel')
+  }).onDismiss(() => {
+    // console.log('I am triggered on both OK and Cancel')
+  })
 }
 onMounted(() => {
   stock.forEach((item, index) => {
@@ -64,7 +96,7 @@ onMounted(() => {
 })
 watch(() => state.orders, (orders, prevOrders) => {
   for (const key in orders) {
-    console.log(key, orders[key], Number.isInteger(orders[key]));
+    // console.log(key, orders[key], Number.isInteger(orders[key]));
     if (!Number.isInteger(orders[key]) || orders[key] < 0)
       orders[key] = 0
   }
