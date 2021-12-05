@@ -9,15 +9,7 @@
           </q-card-section>
           <q-separator />
           <q-card-actions>
-            <q-input outlined dense filled type="number" v-model.number="state.orders[item.id]">
-              <template v-slot:append>
-                <!-- <q-btn dense flat icon="shopping_cart" @click="addToCart" /> -->
-                <q-btn-group flat>
-                  <q-btn icon="remove" @click="state.orders[item.id]--" />
-                  <q-btn icon="add" @click="state.orders[item.id]++" />
-                </q-btn-group>
-              </template>
-            </q-input>
+            <numeric-input v-model.number="state.orders[item.id]"></numeric-input>
           </q-card-actions>
         </q-card>
       </template>
@@ -35,6 +27,7 @@
 
 import { ref, toRefs, reactive, onMounted, watch } from "vue"
 import { rosInterface } from "src/utils/RosUtils"
+import NumericInput from "src/components/NumericInput.vue"
 import { useQuasar } from 'quasar'
 const $q = useQuasar()
 
@@ -48,7 +41,7 @@ const state = reactive({
 
 
 
-function clearOrders() {
+function clearOrders () {
   $q.dialog({
     title: 'Confirm',
     message: 'Clear orders?',
@@ -78,7 +71,7 @@ function clearOrders() {
 
 }
 
-function checkoutOrders() {
+function checkoutOrders () {
   $q.dialog({
     title: 'Confirm',
     message: 'Submit orders?',
@@ -117,13 +110,13 @@ onMounted(() => {
 
 
 })
-watch(() => state.orders, (orders, prevOrders) => {
-  for (const key in orders) {
-    // console.log(key, orders[key], Number.isInteger(orders[key]));
-    if (!Number.isInteger(orders[key]) || orders[key] < 0)
-      orders[key] = 0
-  }
-}, { deep: true })
+// watch(() => state.orders, (orders, prevOrders) => {
+//   for (const key in orders) {
+//     console.log(key, orders[key], Number.isInteger(orders[key]));
+//     if (!Number.isInteger(orders[key]) || orders[key] < 0)
+//       orders[key] = 0
+//   }
+// }, { deep: true })
 </script>
 
 <style lang="sass" scoped>
