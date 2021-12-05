@@ -60,6 +60,12 @@ module.exports = configure(function (ctx) {
 
       // Options below are automatically set depending on the env, set them if you want to override
       // extractCSS: false,
+      // extendWebpack(cfg) {
+      //   cfg.module.rules.push({
+      //     test: /\.pug$/,
+      //     loader: "pug-plain-loader",
+      //   });
+      // },
 
       // https://quasar.dev/quasar-cli/handling-webpack
       // "chain" is a webpack-chain object https://github.com/neutrinojs/webpack-chain
@@ -67,6 +73,11 @@ module.exports = configure(function (ctx) {
         chain
           .plugin("eslint-webpack-plugin")
           .use(ESLintPlugin, [{ extensions: ["js", "vue"] }]);
+        chain.module
+          .rule("pug")
+          .test(/\.pug$/)
+          .use("pug-plain-loader")
+          .loader("pug-plain-loader");
       },
     },
 

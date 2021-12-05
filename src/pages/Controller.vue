@@ -1,57 +1,33 @@
-<template>
-  <!-- <div class="q-pad-md row justify-center"> -->
-  <q-page class="flex flex-center">
-    <q-card class="custom-area column">
-      <!-- class="custom-area cursor-pointer bg-primary text-white shadow-2 relative-position row flex-center" -->
-      <q-card-section
-        v-touch-pan.prevent.mouse="handlePan"
-        class="full-width bg-primary text-white row flex-center cursor-pointer touch-area"
-      >
-        <!-- <Joy class="custom-area" /> -->
-        <div v-if="state.info" class="custom-info">
-          <pre>{{ state.info }}</pre>
-        </div>
-        <div v-else class="text-center">
-          <q-icon name="arrow_upward" />
-          <div class="row items-center">
-            <q-icon name="arrow_back" />
-            <div>Pan in any direction</div>
-            <q-icon name="arrow_forward" />
-          </div>
-          <q-icon name="arrow_downward" />
-        </div>
-
-        <div v-show="state.panning" class="touch-signal">
-          <q-icon name="touch_app" />
-        </div>
-      </q-card-section>
-      <q-separator />
-      <q-card-section class="justify-center row">
-        <q-input
-          :width="200"
-          rounded
-          standout
-          dense
-          v-model="state.cmdVelTopic"
-          label="cmd_vel topic"
-          class="col-auto"
-        ></q-input>
-        <!-- <q-btn flat>Action 1</q-btn> -->
-      </q-card-section>
-    </q-card>
-    <!-- </div> -->
-  </q-page>
+<template lang="pug">
+q-page(padding).flex
+  Joy
+  q-btn-toggle(
+    no-caps 
+    rounded 
+    unelevated
+    toggle-color="primary"
+    text-color="primary"
+    v-model="controlMode"
+    :options="[ \
+      { label: 'One', value: 'one' }, \
+      { label: 'Two', value: 'two' }, \
+      { label: 'Three', value: 'three' } \
+    ]")
 </template>
 
 <script setup>
 // import Joy from 'components/Joy.vue'
 import { rosInterface } from 'src/utils/RosUtils'
 import { toRefs, ref, reactive, watch, computed, onMounted } from 'vue'
+import DPad from 'src/components/DPad.vue';
+import Joy from 'src/components/Joy.vue';
+
+const controlMode = ref("one")
 const state = reactive({
   info: null,
   panning: false,
   direction: "stop",
-  cmdVelTopic: rosInterface.cmdVelPublisher.name,
+  cmdVelTopic: rosInterface.cmdVelTopic.name,
   velocity: 0.5,
   cmdVelMsg: computed(() => {
     var msg = {
@@ -65,7 +41,7 @@ const state = reactive({
   })
 })
 
-function handlePan({ evt, ...newInfo }) {
+function handlePan ({ evt, ...newInfo }) {
   state.info = newInfo
 
   // native Javascript event
@@ -83,13 +59,13 @@ function handlePan({ evt, ...newInfo }) {
 }
 
 // watch topic and change publisher on change
-watch(() => state.cmdVelTopic, (topic) => { rosInterface.cmdVelPublisher.name = topic; })
+watch(() => state.cmdVelTopic, (topic) => { rosInterface.cmdVelTopic.name = topic; })
 // Publish 10Hz
 onMounted(() => {
   setInterval(() => {
     if (state.panning) {
       // console.log("pub message")
-      rosInterface.cmdVelPublisher.publish(state.cmdVelMsg)
+      rosInterface.cmdVelTopic.publish(state.cmdVelMsg)
     }
   }, 100)
 })

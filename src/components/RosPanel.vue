@@ -1,31 +1,8 @@
-<template >
-    <q-input dark standout dense v-model="ws_address" label="ROS Connection">
-        <template v-slot:append>
-            <q-btn
-                v-if="rosConnection.connected"
-                @click="rosDisconnect"
-                round
-                dense
-                flat
-                color="positive"
-                icon="link"
-                class="cursor-pointer"
-            />
-            <q-btn
-                v-else
-                @click="connect"
-                round
-                dense
-                flat
-                color="red"
-                icon="link_off"
-                class="cursor-pointer"
-            />
-            <!-- <q-avatar>
-                    <img src="https://cdn.quasar.dev/logo-v2/svg/logo.svg" />
-            </q-avatar>-->
-        </template>
-    </q-input>
+<template lang="pug">
+q-input(dark standout dense v-model='ws_address' label='ROS Connection')
+    template(v-slot:append)
+        q-btn.cursor-pointer(v-if='rosConnection.connected' @click='rosDisconnect' round dense flat color='positive' icon='link')
+        q-btn.cursor-pointer(v-else @click='connect' round dense flat color='red' icon='link_off')
 </template>
 <script setup>
 import { ref, onMounted } from 'vue';
@@ -37,9 +14,9 @@ const connect = () => {
 }
 onMounted(() => {
     connect();
-    rosInterface.orderListener.subscribe(function (message) {
-        console.log('Received message on ' + rosInterface.orderListener.name + ': ' + message.data);
-    });
+    // rosInterface.orderTopic.subscribe(function (message) {
+    //     console.log('Received message on ' + rosInterface.orderTopic.name + ': ' + message.data);
+    // });
 })
 </script>
 <style lang="scss">

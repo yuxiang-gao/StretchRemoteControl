@@ -1,5 +1,5 @@
-<template>
-  <div ref="joyCon"></div>
+<template lang="pug">
+div(ref="joyCon").fit.rounded-borders.joy-panel
 </template>
 
 <script setup>
@@ -23,8 +23,11 @@ onMounted(() => {
 
 </script>
 
+<style lang="sass" scoped>
 
-
-
-<style lang="scss">
+.joy-panel
+  // border: 5px outset
+  background-color: $primary
+  min-height: 500px
 </style>
+
