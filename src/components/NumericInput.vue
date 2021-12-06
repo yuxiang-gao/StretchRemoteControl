@@ -1,13 +1,13 @@
 <template lang="pug">
-q-input(outlined dense filled min='0' type='number' 
+q-input(outlined dense filled min='0' 
   :model-value='modelValue' 
   @update:model-value='updateModelValue')
   template(#prepend)
     q-btn(flat icon='remove' 
-      v-touch-repeat:0:100.mouse.enter.space='decrement')
+      v-touch-repeat:0:300:100.mouse.left='decrement')
   template(#append)
     q-btn(flat icon='add' 
-      v-touch-repeat:0:100.mouse.enter.space='increment')
+      v-touch-repeat:0:300:100.mouse.right='increment')
 </template>
 
 <script setup>
