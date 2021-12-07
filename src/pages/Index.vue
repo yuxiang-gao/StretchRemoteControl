@@ -30,6 +30,10 @@ import { rosInterface } from "src/utils/RosUtils"
 import NumericInput from "src/components/NumericInput.vue"
 import { useQuasar } from 'quasar'
 const $q = useQuasar()
+$q.notify.setDefaults({
+  // position: 'center',
+  timeout: 800,
+})
 
 const stock = [
   { id: 80, }, { id: 81 }, { id: 82 }

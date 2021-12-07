@@ -8,7 +8,7 @@ q-input(dark standout dense v-model='ws_address' label='ROS Connection')
 import { ref, onMounted } from 'vue';
 import { rosConnect, rosDisconnect, rosConnection, rosInterface } from '../utils/RosUtils';
 
-const ws_address = ref("ws://192.168.0.12:9098")
+const ws_address = ref("ws://192.168.0.186:9090")
 const connect = () => {
     rosConnect(ws_address.value);
 }

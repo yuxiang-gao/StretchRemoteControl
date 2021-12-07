@@ -1,3 +1,4 @@
+import { _ } from "core-js";
 import { reactive } from "vue";
 // Ref: https://github.com/hcrlab/stretch_web_interface/blob/master/robot/js/ros_connect.js
 export const rosConnection = reactive({
@@ -18,13 +19,14 @@ export function rosConnect(url) {
     console.log("Connection to websocket server closed.");
   });
 }
-
 export const rosDisconnect = () => {
   rosConnection.ros.close();
   rosConnection.connected = false;
 };
 
 export const rosInterface = reactive({
+  // JointState
+  jointState: null,
   // Subscriber
   orderTopic: new ROSLIB.Topic({
     ros: rosConnection.ros,
@@ -53,6 +55,11 @@ export const rosInterface = reactive({
     messageType: "geometry_msgs/Twist",
   }),
   // Service Clients
+  calibrateClient: new ROSLIB.Service({
+    ros: rosConnection.ros,
+    name: "/calibrate_the_robot",
+    serviceType: "std_srvs/Trigger",
+  }),
   magnetClient: new ROSLIB.Service({
     ros: rosConnection.ros,
     name: "/magnet_toggle",
@@ -86,7 +93,25 @@ export const rosInterface = reactive({
   }),
 });
 
-export function triggerRosService(client) {
+// subscribe to jointstates
+rosInterface.jointStateTopic.subscribe(function (message) {
+  if (rosInterface.jointState === null) {
+    console.log("Received first joint state from ROS");
+  }
+  rosInterface.jointState = message;
+  // console.log(rosInterface.jointState);
+});
+
+export function cmdVelLinear(dist) {
+  var twist = new ROSLIB.Message({
+    linear: {
+      y: dist,
+    },
+  });
+  rosInterface.cmdVelTopic.publish(twist);
+}
+
+function triggerRosService(client) {
   var request = new ROSLIB.ServiceRequest({});
   client.callService(request, function (result) {
     console.log(
@@ -100,7 +125,16 @@ export function triggerRosService(client) {
   });
 }
 
-export function generatePoseGoal(pose) {
+export function triggerServiceByName(name) {
+  var client = new ROSLIB.Service({
+    ros: rosConnection.ros,
+    name: name,
+    serviceType: "std_srvs/Trigger",
+  });
+  triggerRosService(client);
+}
+
+function generatePoseGoal(pose) {
   var outStr = "{";
   for (var key in pose) {
     outStr = outStr + String(key) + ":" + String(pose[key]) + ", ";
@@ -153,78 +187,47 @@ export function generatePoseGoal(pose) {
   return newGoal;
 }
 
-var backendRobotMode = "nav";
-export function robotModeOn(modeKey) {
-  console.log("robotModeOn called with modeKey = " + modeKey);
-
-  let debugDiv = document.getElementById("debug-text");
-  debugDiv.innerHTML = "Robot mode: " + modeKey;
-  backendRobotMode = modeKey;
-
-  // This is where the head pose gets set when mode is switched.
-
-  if (modeKey === "nav") {
-    var headNavPoseGoal = generatePoseGoal({
-      joint_head_pan: 0.0,
-      joint_head_tilt: -1.2,
-    });
-    headNavPoseGoal.send();
-    console.log("sending navigation pose to head");
-  } else if (modeKey === "manip") {
-    // resetOffset();
-    lookAtGripper();
-    console.log("sending end-effector pose to head");
-  } else if (modeKey === "low_arm") {
-    var headManPoseGoal = generatePoseGoal({
-      joint_head_pan: -1.57,
-      joint_head_tilt: -0.9,
-    });
-    headManPoseGoal.send();
-    console.log("sending manipulation pose to head");
-  } else if (modeKey === "high_arm") {
-    var headManPoseGoal = generatePoseGoal({
-      joint_head_pan: -1.57,
-      joint_head_tilt: -0.45,
-    });
-    headManPoseGoal.send();
-    console.log("sending manipulation pose to head");
-  }
+function getJointValue(jointStateMessage, jointName) {
+  var jointIndex = jointStateMessage.name.indexOf(jointName);
+  return jointStateMessage.position[jointIndex];
 }
 
-export function baseTranslate(dist, vel) {
-  // distance in centimeters
-  // velocity in centimeters / second
+function getJointValueByName(jointName) {
+  return getJointValue(rosInterface.jointState, jointName);
+}
+
+// ----------  Base control -------------
+
+export function baseTranslate(dist_m) {
+  // distance in meters
   console.log("sending baseTranslate command");
 
-  if (dist > 0.0) {
-    var baseForwardPoseGoal = generatePoseGoal({ translate_mobile_base: -vel });
-    baseForwardPoseGoal.send();
-  } else if (dist < 0.0) {
-    var baseBackwardPoseGoal = generatePoseGoal({ translate_mobile_base: vel });
-    baseBackwardPoseGoal.send();
-  }
-  //sendCommandBody({type: "base",action:"translate", dist:dist, vel:vel});
+  var basePoseGoal = generatePoseGoal({ translate_mobile_base: dist_m });
+  basePoseGoal.send();
 }
 
-export function baseTurn(ang_deg, vel) {
+export function baseTurn(angle_deg) {
   // angle in degrees
-  // velocity in centimeter / second (linear wheel velocity - same as BaseTranslate)
   console.log("sending baseTurn command");
 
-  if (ang_deg > 0.0) {
-    var baseTurnLeftPoseGoal = generatePoseGoal({ rotate_mobile_base: -vel });
-    baseTurnLeftPoseGoal.send();
-  } else if (ang_deg < 0.0) {
-    var baseTurnRightPoseGoal = generatePoseGoal({ rotate_mobile_base: vel });
-    baseTurnRightPoseGoal.send();
-  }
-  //sendCommandBody({type: "base",action:"turn", ang:ang_deg, vel:vel});
+  var baseTurnPoseGoal = generatePoseGoal({
+    rotate_mobile_base: (angle_deg * 3.14) / 180,
+  });
+  baseTurnPoseGoal.send();
 }
+
+export function gripperControl(close) {
+  if (close) generatePoseGoal({ gripper_aperture: 0 }).send();
+  else generatePoseGoal({ gripper_aperture: 0.125 }).send();
+}
+
+// ----------  Arm control -------------
 
 export function sendIncrementalMove(jointName, jointValueInc) {
   console.log("sendIncrementalMove start: jointName =" + jointName);
-  if (jointState !== null) {
-    var newJointValue = getJointValue(jointState, jointName);
+  if (rosInterface.jointState !== null) {
+    var newJointValue = getJointValueByName(jointName);
+    console.log(newJointValue);
     newJointValue = newJointValue + jointValueInc;
     console.log("poseGoal call: jointName =" + jointName);
     var pose = { [jointName]: newJointValue };
@@ -235,63 +238,14 @@ export function sendIncrementalMove(jointName, jointValueInc) {
   return false;
 }
 
-// export function lookAtGripper() {
-//   let posDifference = {
-//     x:
-//       link_gripper_finger_left_tf.translation.x -
-//       link_head_tilt_tf.translation.x,
-//     y:
-//       link_gripper_finger_left_tf.translation.y -
-//       link_head_tilt_tf.translation.y,
-//     z:
-//       link_gripper_finger_left_tf.translation.z -
-//       link_head_tilt_tf.translation.z,
-//   };
-
-//   // Normalize posDifference
-//   const scalar = Math.sqrt(
-//     posDifference.x ** 2 + posDifference.y ** 2 + posDifference.z ** 2
-//   );
-//   posDifference.x /= scalar;
-//   posDifference.y /= scalar;
-//   posDifference.z /= scalar;
-
-//   const pan = Math.atan2(posDifference.y, posDifference.x) + panOffset;
-//   const tilt = Math.atan2(posDifference.z, -posDifference.y) + tiltOffset;
-
-//   let debugDiv = document.getElementById("debug-text");
-//   debugDiv.innerHTML += "\n lookAtGripper: " + pan + "," + tilt;
-
-//   let headFollowPoseGoal = generatePoseGoal({
-//     joint_head_pan: pan,
-//     joint_head_tilt: tilt,
-//   });
-//   headFollowPoseGoal.send();
-//   console.log("Sending arm look at pose to head.");
-// }
-
-export function armMove(dist, timeout, vel) {
+export function armMove(delta) {
   console.log("attempting to sendarmMove command");
-  var jointValueInc = 0.0;
-  if (dist > 0.0) {
-    jointValueInc = vel;
-  } else if (dist < 0.0) {
-    jointValueInc = -vel;
-  }
-  sendIncrementalMove("wrist_extension", jointValueInc);
-  //sendCommandBody({type: "arm", action:"move", dist:dist, timeout:timeout});
+  sendIncrementalMove("wrist_extension", delta);
 }
 
-export function liftMove(dist, timeout, vel) {
+export function liftMove(delta) {
   console.log("attempting to sendliftMove command");
-  var jointValueInc = 0.0;
-  if (dist > 0.0) {
-    jointValueInc = vel;
-  } else if (dist < 0.0) {
-    jointValueInc = -vel;
-  }
-  sendIncrementalMove("joint_lift", jointValueInc);
-  //sendCommandBody({type: "lift", action:"move", dist:dist, timeout:timeout});
+  sendIncrementalMove("joint_lift", delta);
 }
 
 export function gripperDeltaAperture(deltaWidthCm) {
@@ -307,36 +261,30 @@ export function gripperDeltaAperture(deltaWidthCm) {
   //sendCommandWrist({type:'gripper', action:'delta', delta_aperture_cm:deltaWidthCm});
 }
 
-function wristMove(angRad, vel) {
+export function wristMove(angDeg) {
   console.log("attempting to send wristMove command");
-  var jointValueInc = 0.0;
-  if (angRad > 0.0) {
-    jointValueInc = vel;
-  } else if (angRad < 0.0) {
-    jointValueInc = -vel;
-  }
-  sendIncrementalMove("joint_wrist_yaw", jointValueInc);
+  sendIncrementalMove("joint_wrist_yaw", (angDeg * 3.14) / 180);
 }
 
-export function headTilt(angRad) {
-  if (isWristFollowingActive) {
-    console.log("Adding headTilt offset to gripper following");
-    tiltOffset += angRad;
-  } else {
-    console.log("Attempting to send headTilt command");
-    sendIncrementalMove("joint_head_tilt", angRad);
-  }
-}
+// export function headTilt(angRad) {
+//   if (isWristFollowingActive) {
+//     console.log("Adding headTilt offset to gripper following");
+//     tiltOffset += angRad;
+//   } else {
+//     console.log("Attempting to send headTilt command");
+//     sendIncrementalMove("joint_head_tilt", angRad);
+//   }
+// }
 
-export function headPan(angRad) {
-  if (isWristFollowingActive) {
-    console.log("Adding headTilt offset to gripper following");
-    panOffset += angRad;
-  } else {
-    console.log("attempting to send headPan command");
-    sendIncrementalMove("joint_head_pan", angRad);
-  }
-}
+// export function headPan(angRad) {
+//   if (isWristFollowingActive) {
+//     console.log("Adding headTilt offset to gripper following");
+//     panOffset += angRad;
+//   } else {
+//     console.log("attempting to send headPan command");
+//     sendIncrementalMove("joint_head_pan", angRad);
+//   }
+// }
 
 export function goToPose(pose) {
   generatePoseGoal(pose).send();
