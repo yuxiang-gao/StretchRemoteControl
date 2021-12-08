@@ -85,6 +85,11 @@ export const rosInterface = reactive({
     name: "/switch_to_position_mode",
     serviceType: "std_srvs/Trigger",
   }),
+  runstopClient: new ROSLIB.Service({
+    ros: rosConnection.ros,
+    name: "/runstop",
+    serviceType: "std_srvs/SetBool",
+  }),
   // Action clients
   trajectoryClient: new ROSLIB.ActionClient({
     ros: rosConnection.ros,
@@ -102,6 +107,19 @@ rosInterface.jointStateTopic.subscribe(function (message) {
   // console.log(rosInterface.jointState);
 });
 
+export function setRunstop(isStop) {
+  var request = new ROSLIB.ServiceRequest({ data: isStop });
+  rosInterface.runstopClient.callService(request, function (result) {
+    console.log(
+      "Result for service call on " +
+        rosInterface.runstopClient.name +
+        ": " +
+        result.success +
+        " - " +
+        result.message
+    );
+  });
+}
 export function cmdVelLinear(dist) {
   var twist = new ROSLIB.Message({
     linear: {
@@ -123,6 +141,15 @@ function triggerRosService(client) {
         result.message
     );
   });
+}
+
+export function triggerEmptyServiceByName(name) {
+  var client = new ROSLIB.Service({
+    ros: rosConnection.ros,
+    name: name,
+    serviceType: "std_srvs/Empty",
+  });
+  triggerRosService(client);
 }
 
 export function triggerServiceByName(name) {

@@ -1,27 +1,46 @@
 <template lang="pug">
 q-page(padding)
   .q-pa-lg.row.q-gutter-md.flex-center
-    q-card(style='max-width: 500px').col
-      q-card-section(:style='state.modeStyle' )
+    q-card(style="max-width: 500px").col
+      q-card-section(:style="state.modeStyle" )
         Joy(@event="handleJoystick")
-      //- q-card-section
-      //-   q-input(label="cmd_vel topic" v-model="state.cmdVelTopic")
       q-tabs(v-model="state.controlMode" )
         q-tab(label="Base" name="base").text-primary
         q-tab(label="Arm" name="arm").text-secondary
       q-separator(inset)
-      q-card-actions(align="center").q-gutter-md
-        q-btn(round icon='home' @click="triggerServiceByName('/calibrate_the_robot')")
-        q-separator(vertical)
-        div wrist yaw
-        q-btn(round icon='remove' v-touch-repeat:0:300:100.mouse.left='wristInc')
-        q-btn(round icon='add' v-touch-repeat:0:300:100.mouse.left='wristDec')
-        //- numeric-input(min='0' max='360' v-model.number='state.wristAngle')
-        q-separator(vertical)
-        div Gripper
-        q-toggle(v-model="state.gripperClosed"
-      :label="state.gripperClosed ? 'Close' : 'Open'" )
-        //- q-toggle(v-model="state.navMode" :label="state.navMode" false-value="nav" true-value="pos")
+      q-card-actions(align="center").q-gutter-md.row
+        q-btn(round icon="west" 
+          v-touch-repeat:0:300:100.mouse.left="wristInc")
+        q-btn(
+          round
+          color="primary"
+          v-model="state.gripperClosed" 
+          :outline="state.gripperClosed ? true : false"
+          :icon="state.gripperClosed ? 'close_fullscreen' : 'open_in_full'"
+          @click="toggleGripper")
+        q-btn(round icon="east" 
+          v-touch-repeat:0:300:100.mouse.left="wristDec")
+      //- q-separator(inset)
+      //- q-card-actions(align="center").q-gutter-md.row.flex-center
+      //-   q-btn(rounded icon="home" @click="triggerServiceByName('/calibrate_the_robot')").col
+      //-   //- q-separator(vertical)
+      //-   q-btn(rounded color="warning" icon="switch_camera" @click="resetCameras").col
+      //-   //- q-separator(vertical)
+      //-   q-btn(
+      //-     rounded
+      //-     v-model="state.runstop" 
+      //-     :color="state.runstop ? 'positive' : 'negative'" 
+      //-     :icon="state.runstop ? 'play_arrow' : 'stop'"
+      //-     @click="toggleRunstop").col
+
+  q-page-sticky(position="bottom-right" :offset="[18, 18]")
+    q-fab(icon="settings" direction="up" vertical-actions-align="right" color="accent")
+      q-fab-action( label-position="left" label="Home Robot" color="primary" icon="home" @click="triggerServiceByName('/calibrate_the_robot')")
+      q-fab-action(label-position="left" label="Reset Cameras" color="warning" icon="switch_camera" @click="resetCameras")
+      q-fab-action(label-position="left" label="Runstop" v-model="state.runstop" 
+        :color="state.runstop ? 'positive' : 'negative'" 
+        :icon="state.runstop ? 'play_arrow' : 'stop'"
+        @click="toggleRunstop")
 </template>
 
 <script setup>
@@ -29,8 +48,7 @@ import _ from 'lodash';
 import { toRefs, ref, reactive, watch, watchEffect, computed, onMounted } from 'vue'
 import { getCssVar } from 'quasar'
 
-import { rosInterface, triggerServiceByName, baseTranslate, baseTurn, gripperControl, armMove, liftMove, wristMove } from 'src/utils/RosUtils'
-// import DPad from 'src/components/DPad.vue';
+import { rosInterface, triggerServiceByName, triggerEmptyServiceByName, baseTranslate, baseTurn, gripperControl, armMove, liftMove, wristMove, setRunstop } from 'src/utils/RosUtils'
 import Joy from 'src/components/Joy.vue';
 import NumericInput from "src/components/NumericInput.vue"
 
@@ -43,12 +61,13 @@ const state = reactive({
   controlMode: 'base',
   // wristAngle: 0,
   // navMode: 'nav',
+  runstop: false,
   modeStyle: computed(() => "backgroundColor: " + controlStyles[state.controlMode]),
   touching: false,
   gripperClosed: false,
   direction: null,
   cmdVelTopic: rosInterface.cmdVelTopic.name,
-  velocity: { linear: 0.08, angular: 15 }, //in cm
+  velocity: { linear: 0.08, angular: 15 },
 })
 
 function wristInc () {
@@ -58,6 +77,20 @@ function wristDec () {
   wristMove(-state.velocity.angular);
 }
 
+function toggleRunstop () {
+  state.runstop = !state.runstop;
+  setRunstop(state.runstop);
+}
+
+function toggleGripper () {
+  state.gripperClosed = !state.gripperClosed;
+  gripperControl(state.gripperClosed);
+}
+
+function resetCameras () {
+  triggerEmptyServiceByName("/camera/realsense2_camera/reset");
+  triggerEmptyServiceByName("/wrist_camera/realsense2_camera/reset");
+}
 function handleJoystick (event) {
   // console.log(event)
   if (event === "start") {
@@ -77,7 +110,7 @@ function handleJoystick (event) {
 }
 
 //watch gripper
-watchEffect(() => { gripperControl(state.gripperClosed) });
+watch(() => { state.gripperClosed }, (gripperClosed, prevGripperClosed) => { ripperControl(gripperClosed) });
 // Publish 10Hz
 onMounted(() => {
   setInterval(() => {
