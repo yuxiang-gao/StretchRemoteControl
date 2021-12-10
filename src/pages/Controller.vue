@@ -35,7 +35,7 @@ q-page(padding)
 
   q-page-sticky(position="bottom-right" :offset="[18, 18]")
     q-fab(icon="settings" direction="up" vertical-actions-align="right" color="accent")
-      q-fab-action( label-position="left" label="Home Robot" color="primary" icon="home" @click="triggerServiceByName('/calibrate_the_robot')")
+      q-fab-action( label-position="left" label="Calibrate" color="primary" icon="home" @click="triggerServiceByName('/calibrate_the_robot')")
       q-fab-action(label-position="left" label="Reset Cameras" color="warning" icon="switch_camera" @click="resetCameras")
       q-fab-action(label-position="left" label="Runstop" v-model="state.runstop" 
         :color="state.runstop ? 'positive' : 'negative'" 
