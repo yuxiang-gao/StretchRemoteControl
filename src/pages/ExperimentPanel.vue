@@ -54,7 +54,7 @@
 import { toRefs, ref, reactive, watch, watchEffect, computed, onMounted } from "vue";
 import { rosConnection } from "src/utils/RosUtils";
 
-const expressionList = ["happy", "sad", "mad", "focused", "confused"];
+const expressionList = ["happy", "sad", "angry", "focused", "confused"];
 const lastExpression = ref("None");
 var expressionTopic = new ROSLIB.Topic({
   ros: rosConnection.ros,
