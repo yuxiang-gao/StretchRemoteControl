@@ -24,15 +24,23 @@ export const rosDisconnect = () => {
   rosConnection.connected = false;
 };
 
+export function makeTopic(topicName, topicType) {
+  return new ROSLIB.Topic({
+    ros: rosConnection.ros,
+    name: topicName,
+    messageType: topicType,
+  });
+}
+
 export const rosInterface = reactive({
   // JointState
   jointState: null,
   // Subscriber
-  orderTopic: new ROSLIB.Topic({
-    ros: rosConnection.ros,
-    name: "/sp_sm/current_orders",
-    messageType: "std_msgs/Int16MultiArray",
-  }),
+  // orderTopic: new ROSLIB.Topic({
+  //   ros: rosConnection.ros,
+  //   name: "/sp_sm/current_orders",
+  //   messageType: "std_msgs/Int16MultiArray",
+  // }),
   stateTopic: new ROSLIB.Topic({
     ros: rosConnection.ros,
     name: "/state_machine/smach/container_status",

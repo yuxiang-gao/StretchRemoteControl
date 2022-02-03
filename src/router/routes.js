@@ -19,6 +19,11 @@ const routes = [
         name: "home.controller",
         component: () => import("pages/Controller.vue"),
       },
+      {
+        path: "experiment",
+        name: "home.experiment",
+        component: () => import("pages/ExperimentPanel.vue"),
+      },
     ],
   },
   // Always leave this as last one,

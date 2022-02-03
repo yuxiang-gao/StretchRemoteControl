@@ -68,5 +68,11 @@ const menuContent = [
     pathName: 'home.controller',
     separator: false
   },
+  {
+    icon: 'science',
+    label: 'Experiment',
+    pathName: 'home.experiment',
+    separator: false
+  },
 ]
 </script>

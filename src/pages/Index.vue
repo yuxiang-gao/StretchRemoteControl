@@ -26,7 +26,7 @@
 <script setup>
 
 import { ref, toRefs, reactive, onMounted, watch } from "vue"
-import { rosInterface } from "src/utils/RosUtils"
+import { rosInterface,triggerServiceByName } from "src/utils/RosUtils"
 import NumericInput from "src/components/NumericInput.vue"
 import { useQuasar } from 'quasar'
 const $q = useQuasar()
@@ -89,6 +89,7 @@ function checkoutOrders () {
     })
     // console.log('Orders submitted.')
     //TODO publish order
+    triggerServiceByName("/sp_sm/start")
     notif({
       type: 'positive',
       message: 'Orders submitted.'
