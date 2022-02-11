@@ -15,6 +15,26 @@
               }
             "
           />
+          <q-btn
+            rounded
+            color="secondary"
+            label="Stow"
+            @click="
+              () => {
+                triggerServiceByName('/robot/stow');
+              }
+            "
+          />
+          <q-btn
+            rounded
+            color="warning"
+            label="Rest"
+            @click="
+              () => {
+                triggerServiceByName('/robot/rest');
+              }
+            "
+          />
           <!-- <q-btn rounded color="red" label="Stop Task" /> -->
         </q-btn-group>
         <div>
@@ -34,72 +54,76 @@
             />
           </template>
         </q-btn-group>
-
-        <div>Voice Command</div>
-        <q-list bordered separator style="max-width: 350px">
-          <template v-for="(text, index) in speechList" :key="index">
-            <q-item clickable v-ripple>
-              <q-item-section
-                @click="
-                  () => {
-                    speak(ttsService, text);
-                  }
-                "
-              >
-                <q-item-label overline>Voice</q-item-label>
-                <q-item-label>{{ text }}</q-item-label>
-              </q-item-section>
-            </q-item>
-          </template>
-          <q-input outlined dense v-model="speechText">
-            <template v-slot:append>
-              <q-btn
-                round
-                dense
-                color="primary"
-                icon="mic"
-                @click="
-                  () => {
-                    speak(ttsService, speechText);
-                  }
-                "
-              />
-            </template>
-          </q-input>
-        </q-list>
-
-        <div>Machine-like Voice Command</div>
-        <q-list bordered separator style="max-width: 350px">
-          <template v-for="(text, index) in machineSpeechList" :key="index">
-            <q-item clickable v-ripple>
-              <q-item-section
-                @click="
-                  () => {
-                    speak(ttsMachineService, text);
-                  }
-                "
-              >
-                <q-item-label overline>Machine Voice</q-item-label>
-                <q-item-label>{{ text }}</q-item-label>
-              </q-item-section>
-            </q-item>
-          </template>
-          <q-input outlined dense v-model="machineText">
-            <template v-slot:append>
-              <q-btn
-                round
-                dense
-                color="primary"
-                icon="mic"
-                @click="
-                  () => {
-                    speak(ttsMachineService, machineText);
-                  }
-                "
-              />
-            </template>
-          </q-input>
-        </q-list>
+        <div class="row justify-start">
+          <div class="col">
+            Voice Command
+            <q-list bordered separator style="max-width: 350px">
+              <template v-for="(text, index) in speechList" :key="index">
+                <q-item clickable v-ripple>
+                  <q-item-section
+                    @click="
+                      () => {
+                        speak(ttsService, text);
+                      }
+                    "
+                  >
+                    <q-item-label overline>Voice</q-item-label>
+                    <q-item-label>{{ text }}</q-item-label>
+                  </q-item-section>
+                </q-item>
+              </template>
+              <q-input outlined dense v-model="speechText">
+                <template v-slot:append>
+                  <q-btn
+                    round
+                    dense
+                    color="primary"
+                    icon="mic"
+                    @click="
+                      () => {
+                        speak(ttsService, speechText);
+                      }
+                    "
+                  />
+                </template>
+              </q-input>
+            </q-list>
+          </div>
+          <div class="col">
+            Machine-like Voice Command
+            <q-list bordered separator style="max-width: 350px">
+              <template v-for="(text, index) in machineSpeechList" :key="index">
+                <q-item clickable v-ripple>
+                  <q-item-section
+                    @click="
+                      () => {
+                        speak(ttsMachineService, text);
+                      }
+                    "
+                  >
+                    <q-item-label overline>Machine Voice</q-item-label>
+                    <q-item-label>{{ text }}</q-item-label>
+                  </q-item-section>
+                </q-item>
+              </template>
+              <q-input outlined dense v-model="machineText">
+                <template v-slot:append>
+                  <q-btn
+                    round
+                    dense
+                    color="primary"
+                    icon="mic"
+                    @click="
+                      () => {
+                        speak(ttsMachineService, machineText);
+                      }
+                    "
+                  />
+                </template>
+              </q-input>
+            </q-list>
+          </div>
+        </div>
 
         <div>
           <iframe
@@ -128,12 +152,21 @@ const machineText = ref("");
 const speechList = [
   "Hello, my name is Stretch.",
   "You should sort this by shape.",
+  "By shape.",
   "You should sort this by color.",
+  "By color.",
   "You should sort this by number.",
+  "By number.",
+  "Nice to meet you.",
+  "Nice to meet you too.",
   "I'm not sure.",
   "Would you excuse me for a moment?",
   "Yes, how can I help you?",
   "Sorry, I don't know.",
+  "Hello.",
+  "Good job.",
+  "Nice work.",
+  "Well done.",
 ];
 
 const machineSpeechList = [
