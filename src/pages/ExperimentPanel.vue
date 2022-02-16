@@ -157,6 +157,8 @@ const speechList = [
   "By color.",
   "You should sort this by number.",
   "By number.",
+  "You are welcome.",
+  "No problem.",
   "Nice to meet you.",
   "Nice to meet you too.",
   "I'm not sure.",
@@ -174,6 +176,7 @@ const machineSpeechList = [
   "Shape",
   "Color",
   "Number",
+  "You are welcome.",
   "Occupied.",
   "I don't know.",
 ];
