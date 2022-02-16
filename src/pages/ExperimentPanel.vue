@@ -37,6 +37,29 @@
           />
           <!-- <q-btn rounded color="red" label="Stop Task" /> -->
         </q-btn-group>
+        <q-btn-group rounded>
+          <q-btn
+            rounded
+            color="red"
+            label="Stop"
+            @click="
+              () => {
+                setRunstop(true);
+              }
+            "
+          />
+          <q-btn
+            rounded
+            color="green"
+            label="Run"
+            @click="
+              () => {
+                setRunstop(false);
+              }
+            "
+          />
+          <!-- <q-btn rounded color="red" label="Stop Task" /> -->
+        </q-btn-group>
         <div>
           Facial expression: <strong>{{ lastExpression }}</strong>
         </div>
@@ -141,7 +164,7 @@
 
 <script setup>
 import { toRefs, ref, reactive, watch, watchEffect, computed, onMounted } from "vue";
-import { rosConnection, triggerServiceByName } from "src/utils/RosUtils";
+import { rosConnection, triggerServiceByName, setRunstop } from "src/utils/RosUtils";
 
 const expressionList = ["happy", "sad", "angry", "focused", "confused"];
 const lastExpression = ref("None");
