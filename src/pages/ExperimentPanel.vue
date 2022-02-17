@@ -188,13 +188,14 @@ const speechList = [
   "Would you excuse me for a moment?",
   "Yes, how can I help you?",
   "Sorry, I don't know.",
-  "Hello.",
+  "Hi.",
   "Good job.",
   "Nice work.",
   "Well done.",
 ];
 
 const machineSpeechList = [
+  "Hi.",
   "Hello",
   "Shape",
   "Color",
