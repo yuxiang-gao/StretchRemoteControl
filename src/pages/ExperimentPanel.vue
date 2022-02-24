@@ -174,6 +174,7 @@ const machineText = ref("");
 
 const speechList = [
   "Hello, my name is Stretch.",
+  "In a minute.",
   "You should sort this by shape.",
   "By shape.",
   "You should sort this by color.",
