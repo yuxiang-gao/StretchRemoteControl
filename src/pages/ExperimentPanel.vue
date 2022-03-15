@@ -166,7 +166,7 @@
 import { toRefs, ref, reactive, watch, watchEffect, computed, onMounted } from "vue";
 import { rosConnection, triggerServiceByName, setRunstop } from "src/utils/RosUtils";
 
-const expressionList = ["happy", "sad", "angry", "focused", "confused"];
+const expressionList = ["focused", "confused", "happy"]; //, "sad", "angry"];
 const lastExpression = ref("None");
 
 const speechText = ref("");
@@ -175,11 +175,12 @@ const machineText = ref("");
 const speechList = [
   "Hello, my name is Stretch.",
   "In a minute.",
+  "Hi.",
   "You should sort this by shape.",
-  "By shape.",
   "You should sort this by color.",
-  "By color.",
   "You should sort this by number.",
+  "By shape.",
+  "By color.",
   "By number.",
   "You are welcome.",
   "No problem.",
@@ -189,7 +190,6 @@ const speechList = [
   "Would you excuse me for a moment?",
   "Yes, how can I help you?",
   "Sorry, I don't know.",
-  "Hi.",
   "Good job.",
   "Nice work.",
   "Well done.",
