@@ -2,7 +2,8 @@
 q-page(padding)
   .q-pa-lg.row.q-gutter-md.flex-center
     q-card(style="max-width: 500px").col
-      q-card-section(:style="state.modeStyle" )
+      q-card-section(:style="state.modeStyle" )#joy-container
+        Camera(src-topic="/camera/color/image_raw" :rotate="90")
         Joy(@event="handleJoystick")
       q-tabs(v-model="state.controlMode" )
         q-tab(label="Base" name="base").text-primary
@@ -173,4 +174,11 @@ onMounted(() => {
 // watch(() => state.cmdVelTopic, (topic) => { rosInterface.cmdVelTopic.name = topic; })
 </script>
 
-<style lang="sass" scoped></style>
+<style lang="sass" scoped>
+// #joy-container
+//   position:absolute
+
+// #joy-container > *
+//   position:relative
+//
+</style>
