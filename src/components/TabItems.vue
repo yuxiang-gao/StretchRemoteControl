@@ -10,9 +10,9 @@ q-tabs(no-caps
   ).bg-primary.text-white.shadow-2.rounded-borders.fit
   template(v-for='(menuItem, index) in tabContent' :key='index')
     q-route-tab(
-      :to='{ name: menuItem.pathName }' 
-      :icon='menuItem.icon' 
-      :label='menuItem.label' 
+      :to='{ name: menuItem.pathName }'
+      :icon='menuItem.icon'
+      :label='menuItem.label'
       :name='menuItem.label')
 </template>
 

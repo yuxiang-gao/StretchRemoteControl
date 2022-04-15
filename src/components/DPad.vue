@@ -1,48 +1,48 @@
 <template lang="pug">
 .row.items-center.q-pa-md
   q-btn(
-    push 
-    round 
-    dense 
-    :size='size' 
-    :color='color' 
+    push
+    round
+    dense
+    :size='size'
+    :color='color'
     icon='west'
     ).column.q-mr-md
   .column.items-center
     q-btn(
-      push 
-      round 
-      dense 
-      :size='size' 
-      :color='color' 
-      icon='north'  
-      v-touch-repeat:0:100.mouse.enter.space="increment" 
+      push
+      round
+      dense
+      :size='size'
+      :color='color'
+      icon='north'
+      v-touch-repeat:0:100.mouse.enter.space="increment"
       ).q-mb-md
     q-btn(
-      push 
-      round 
-      dense 
-      :size='size' 
-      :color='color' 
+      push
+      round
+      dense
+      :size='size'
+      :color='color'
       icon='stop'
       ).q-ma-md
     q-btn(
-      push 
-      round 
-      dense 
-      :size='size' 
-      :color='color' 
+      push
+      round
+      dense
+      :size='size'
+      :color='color'
       icon='south'
       ).q-mt-md
   q-btn(
-    push 
-    round 
-    dense 
-    :size='size' 
-    :color='color' 
+    push
+    round
+    dense
+    :size='size'
+    :color='color'
     icon='east'
     ).column.q-ml-md
-  
+
 </template>
 
 <script setup>
