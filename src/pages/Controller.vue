@@ -2,9 +2,12 @@
 q-page(padding)
   .q-pa-lg.row.q-gutter-md.flex-center
     q-card(style="max-width: 500px").col
-      q-card-section(:style="state.modeStyle" )#joy-container
-        Camera(src-topic="/camera/color/image_raw" :rotate="90")
-        Joy(@event="handleJoystick")
+      q-card-section(:style="modeStyle")#card-container
+        //- #joy-container(ref="joyContainer", :style="cardStyle")
+        #joy-container
+          Camera(src-topic="/camera/color/image_raw" :rotate="90")
+          Joy(@event="handleJoystick")
+
       q-tabs(v-model="state.controlMode" )
         q-tab(label="Base" name="base").text-primary
         q-tab(label="Arm" name="arm").text-secondary
@@ -65,17 +68,20 @@ import Joy from "src/components/Joy.vue";
 import NumericInput from "src/components/NumericInput.vue";
 import Camera from "src/components/Camera.vue";
 
+const joyContainer = ref(null);
 const controlStyles = {
   base: getCssVar("primary"),
   arm: getCssVar("secondary"),
 };
+
+const cardHeight = ref(300);
 
 const state = reactive({
   controlMode: "base",
   // wristAngle: 0,
   // navMode: 'nav',
   runstop: false,
-  modeStyle: computed(() => "backgroundColor: " + controlStyles[state.controlMode]),
+  // modeStyle: computed(() => "backgroundColor: " + controlStyles[state.controlMode]),
   touching: false,
   gripperClosed: false,
   direction: null,
@@ -83,9 +89,18 @@ const state = reactive({
   velocity: { linear: 0.08, angular: 15 },
 });
 
+const modeStyle = reactive({
+  backgroundColor: controlStyles[state.controlMode],
+});
+
+const cardStyle = reactive({
+  height: cardHeight.value + "px",
+});
+
 function wristInc() {
   wristMove(state.velocity.angular);
 }
+
 function wristDec() {
   wristMove(-state.velocity.angular);
 }
@@ -175,10 +190,19 @@ onMounted(() => {
 </script>
 
 <style lang="sass" scoped>
+// #card-container
+//   height: 100%
+//   width: 100%
 // #joy-container
-//   position:absolute
+//   position: relative
+//   min-height: 300px
+//   min-width: 300px
+//   max-width: 500px
 
-// #joy-container > *
-//   position:relative
-//
+// // #joy-container > *
+// Camera
+//   position: absolute
+//   bottom:0
+//   left: 0
+//   width: 100%
 </style>

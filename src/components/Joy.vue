@@ -1,7 +1,7 @@
 <template lang="pug">
-q-responsive(:ratio="1")
-  slot
-  div(ref='joyCon')
+//- q-responsive(:ratio="1")
+//-   slot
+div(ref='joyCon')
 
 </template>
 
