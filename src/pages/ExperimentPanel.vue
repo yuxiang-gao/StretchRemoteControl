@@ -3,7 +3,7 @@
     <!-- content -->
     <div class="q-pa-md">
       <div class="q-gutter-sm">
-        <div class="row">
+        <!-- <div class="row">
           <div class="col-xs-12 col-sm-6 col-md-4">
             <Camera :src-topic="imgTopic" :rotate="parseFloat(rotDeg)">
               <q-input v-model="imgTopic" label="CompressedImage Topic"></q-input>
@@ -13,7 +13,7 @@
           <div class="col-xs-12 col-sm-6 col-md-4">
             <Camera src-topic="/pupil/fpv_image" :rotate="0"> </Camera>
           </div>
-        </div>
+        </div> -->
         <div>Task: <strong>current</strong></div>
         <q-btn-group rounded>
           <q-btn
