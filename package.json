@@ -6,6 +6,7 @@
   "author": "Yuxiang Gao <yuxiang.gao@jhu.edu>",
   "private": true,
   "scripts": {
+    "dev": "quasar dev",
     "lint": "eslint --ext .js,.vue ./",
     "test": "echo \"No test specified\" && exit 0",
     "deploy": "push-dir --dir=dist/spa  --branch=gh-pages "
