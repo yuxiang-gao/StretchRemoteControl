@@ -38,7 +38,7 @@ $q.notify.setDefaults({
   timeout: 800,
 });
 
-const stock = [{ id: 80 }, { id: 81 }, { id: 82 }];
+const stock = [{ id: 80 }, { id: 81 }, { id: 82 }, { id: 83 }];
 
 const state = reactive({
   orders: {},
